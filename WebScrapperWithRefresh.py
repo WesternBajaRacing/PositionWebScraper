@@ -26,7 +26,7 @@ driver = webdriver.Chrome()
 driver.get(url)
 time.sleep(5)  # Adjust the wait time as needed
 
-school = 'Case Western Reserve Univ'
+school = 'Western University'       #check to make sure this matches the bold label for our team on their site
 placement = None
 
 repeat = True
