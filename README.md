@@ -1,4 +1,4 @@
-The python script is within this repo to scrape race statistics from the SAE website during the endurance race and send it to the firebase.
+The python script within this repo to scrape race statistics from the SAE website during the endurance race and send it to the firebase.
 
 The required file to have permissions to firebase can be retriebed from firebase through:
   1. Project Settings
