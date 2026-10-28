@@ -33,6 +33,7 @@ repeat = True
 last_lap_milis = 0
 
 while repeat:
+    placement = None        #reset every refresh so we never resend old data if our row isnt found
 
     # Extract the HTML content after the page is loaded
     html_content = driver.page_source
@@ -112,7 +113,7 @@ while repeat:
                     break  # Stop iterating if the target team is found
 
             if target_row:
-                target = otherColumns[2].contents[1].contents  # Find the name of team in front
+                target = otherColumns[2].contents[1].contents[0]  # Find the name of team in front
                 theirLaps = otherColumns[3].text.strip()  # Find the laps of the team ahead of the target team
                 theirTime = otherColumns[4].next_sibling.contents[1].contents[0]  # Find the time of the team ahead of the target team
                 theirNumber = otherColumns[1].text.strip()  # Find the number of the team ahead of the target team
@@ -130,20 +131,13 @@ while repeat:
         targetData = {'target': target}
         lapsAheadData = {'lapsAhead': theirLaps}
         carAheadNumber = {'carAheadNumber': theirNumber}
-        last_lap_milis = {'previousLapTime': last_lap_milis}
+        previousLapData = {'previousLapTime': last_lap_milis}   #new name so last_lap_milis stays a number
 
         # Reference to the Firebase Database path for the placement
         ref = db.reference('/scraped/')
-        # Updating the placement at the root of the database
-        ref.update(placementData)               #sending data to firebase
-        ref.update(lapsData)
-        ref.update(lastLapData)
-        ref.update(bestLapData)
-        ref.update(targetData)
-        ref.update(carAheadData)
-        ref.update(lapsAheadData)
-        ref.update(carAheadNumber)
-        ref.update(last_lap_milis)
+        # one update call so the dash never reads half old / half new values
+        ref.update({**placementData, **lapsData, **lastLapData, **bestLapData, **targetData,
+                    **carAheadData, **lapsAheadData, **carAheadNumber, **previousLapData})
         print(f"Placement data for {school} has been updated in Firebase.")
     else:
         print(f"Could not find placement data for {school}.")
